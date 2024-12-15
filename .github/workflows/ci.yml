@@ -18,8 +18,8 @@ jobs:
 
       - name: Configurar clave SSH
         run: |
-          echo "${{ secrets.AWS_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+         echo "${{ secrets.AWS_PRIVATE_KEY }}" > /media/keys/keypar-ssh
+         chmod 600 /media/keys/keypar-ssh
 
       - name: Crear instancia EC2
         id: create_instance

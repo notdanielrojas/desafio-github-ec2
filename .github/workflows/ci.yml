@@ -1,0 +1,37 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configurar AWS CLI
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Configurar clave SSH
+        run: |
+          echo "${{ secrets.AWS_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Crear instancia EC2
+        id: create_instance
+        run: |
+          INSTANCE_ID=$(aws ec2 run-instances \
+            --image-id ${{ vars.AWS_IMAGE_ID }} \
+            --count 1 \
+            --instance-type t2.micro \
+            --key-name keypair-ssh \
+            --security-group-ids ${{ vars.AWS_SECURITY_GROUP_ID }} \
+            --subnet-id ${{ vars.AWS_SUBNET_ID }} \
+            --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=MyEC2Instance},{Key=Description,Value=DesafíoDespliegue}]' \
+            --query 'Instances[0].InstanceId' \
+            --output text)
+          echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV

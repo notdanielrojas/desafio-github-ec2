@@ -16,10 +16,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Configurar clave SSH
+      - name: Creando llaves
         run: |
-          echo "${{ secrets.AWS_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa 
+         mkdir -p ~/.ssh
+         echo "${{ secrets.AWS_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+         chmod 600 ~/.ssh/id_rsa
+
 
       - name: Crear instancia EC2
         id: create_instance

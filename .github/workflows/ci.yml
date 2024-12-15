@@ -18,10 +18,9 @@ jobs:
 
       - name: Creando llaves
         run: |
-         mkdir -p ~/.ssh
-         echo "${{ secrets.AWS_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-         chmod 600 ~/.ssh/id_rsa
-
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Crear instancia EC2
         id: create_instance
@@ -31,9 +30,10 @@ jobs:
             --count 1 \
             --instance-type t2.micro \
             --key-name keypair-ssh \
+            --associate-public-ip-address \
             --security-group-ids ${{ vars.AWS_SECURITY_GROUP_ID }} \
             --subnet-id ${{ vars.AWS_SUBNET_ID }} \
-            --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=MyEC2Instance},{Key=Description,Value=DesafíoDespliegue}]' \
+            --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=DesafioEC2},{Key=Description,Value=DesafíoDespliegue}]' \
             --query 'Instances[0].InstanceId' \
             --output text)
           echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
